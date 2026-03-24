@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="header">
+    <h1>📊 Fraud Detection Dashboard</h1>
+    <p>Real-time behavioral fraud analysis</p>
+</div>
+
+{% if fraud > 0 %}
+<div class="alert">
+    ⚠️ High Risk Transactions Detected!
+</div>
+{% endif %}
+
+<!-- 🔥 SUMMARY CARDS -->
+<div class="cards">
+    <div class="card">
+        <h2>📦 {{ total }}</h2>
+        <p>Total Transactions (Uploaded File)</p>
+    </div>
+
+    <div class="card fraud-card">
+        <h2>⚠️{{ fraud }}</h2>
+        <p>Fraud Transactions</p>
+    </div>
+
+    <div class="card">
+        <h2>✅ {{ safe }}</h2>
+        <p>Safe Transactions</p>
+    </div>
+
+    <div class="card rate-card">
+        <h2>📊 {{ rate }}%</h2>
+        <p>Fraud Rate</p>
+    </div>
+    
+</div>
+
+    <p style="text-align:center;">
+        Processed {{ total }} out of {{ original_total }} transactions
+    </p>
+
+<h2 class="section-title">🚨 Fraud Types Detected</h2>
+
+<div class="reasons">
+    {% for ftype, count in fraud_types.items() %}
+        <div class="reason-box">
+            <strong>{{ ftype }}</strong><br>
+            {{ count }} cases
+        </div>
+    {% endfor %}
+</div>
+
+<!-- 📊 CHARTS -->
+<h2 class="section-title">📊 Insights</h2>
+
+<div class="charts">
+    <img src="{{ url_for('static', filename='charts/fraud_bar.png') }}">
+    <img src="{{ url_for('static', filename='charts/fraud_hour.png') }}">
+    <img src="{{ url_for('static', filename='charts/fraud_pie.png') }}">
+</div>
+
+<h2 class="section-title">🔥 Top Fraud Signals</h2>
+
+<div class="reasons">
+    {% for reason, count in top_reasons.items() %}
+        <div class="reason-box">
+            <strong>{{ reason }}</strong><br>
+            {{ count }} occurrences
+        </div>
+    {% endfor %}
+</div>
+
+<!-- 🔍 TABLE -->
+<h2 class="section-title">🔍 Transaction Analysis</h2>
+
+<table>
+    <tr>
+        <th>Amount</th>
+        <th>Fraud</th>
+        <th>Risk Score</th>
+        <th>Risk Level</th>
+        <th>Explanation</th>
+    </tr>
+
+    {% for row in data %}
+    <tr class="
+        {% if row.fraud == 1 %} fraud
+        {% elif row.risk_level == 'High' %} high
+        {% elif row.risk_level == 'Medium' %} medium
+        {% else %} low
+        {% endif %}
+    ">
+        <td>{{ row.transaction_amount }}</td>
+        <td>{{ row.fraud }}</td>
+        <td>{{ row.risk_score }}</td>
+        <td>{{ row.risk_level }}</td>
+        <td>{{ row.explanation }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- 📋 DATA QUALITY -->
+<h2 class="section-title">📋 Data Quality</h2>
+
+<div class="quality">
+    <p><strong>Duplicate Rows:</strong> {{ report.duplicate_rows }}</p>
+    <p><strong>Invalid IP Count:</strong> {{ report.invalid_ip_count }}</p>
+</div>
+
+<a href="/download" class="download-btn">⬇️ Download Report</a>
+
+<a href="/" class="back-btn">🔄 Analyze New Dataset</a>
+
+<div class="footer">
+    Built for FinTech Hackathon 🚀
+</div>
+
+</body>
+</html>
